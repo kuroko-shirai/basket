@@ -5,10 +5,10 @@ import "time"
 // Item
 type Item struct {
 	Timestamp int64
-	Element   any
+	Element   []int32
 }
 
-func New(element any) *Item {
+func New(element []int32) *Item {
 	return &Item{
 		Element:   element,
 		Timestamp: time.Now().Unix(),

@@ -1,6 +1,8 @@
 package basket
 
 import (
+	"sort"
+
 	"github.com/kuroko-shirai/basket/internal/models/item"
 )
 
@@ -17,6 +19,10 @@ func New(size int, ttl int64) *Basket {
 	}
 }
 
-func (b *Basket) Add(element any) {
+func (b *Basket) Add(element []int32) {
+	sort.Slice(element, func(i, j int) bool {
+		return element[i] < element[j]
+	})
+
 	b.Items = append(b.Items, *item.New(element))
 }
