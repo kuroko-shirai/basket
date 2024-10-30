@@ -9,17 +9,23 @@ import (
 )
 
 func main() {
-	newBasket := basket.New(10, 10)
+	newBasket := basket.New(10, 5*time.Second, 3*time.Second)
 
-	newBasket.Add([]int32{2, 16, 9, 0, 1})
-	newBasket.Add([]int32{2, 16, 9, 0, 1})
-	newBasket.Add([]int32{2, 16, 9, 3, 1})
+	newBasket.Add(1) // add 1 item
+	newBasket.Add(3) // add 2 item
+	newBasket.Add(4) // add 3 item
 
-	for _, item := range newBasket.Items {
-		newBasket.Cache.Set(item.Element..., response.Response{
+	for index, item := range newBasket.Items {
+
+		time.Sleep(1 * time.Second) // Do something
+
+		newBasket.Cache.Set(
+			item.Element, response.Response{
 				Timestamp: time.Now().Unix(),
-				Message:   "Hello",
+				Message:   fmt.Sprintf("message %d", index),
 			})
+
+		for
 	}
 
 	fmt.Println(newBasket)

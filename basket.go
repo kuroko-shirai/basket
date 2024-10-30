@@ -1,21 +1,37 @@
 package basket
 
 import (
+	"time"
+
 	"github.com/kuroko-shirai/basket/internal/models/cache"
 	"github.com/kuroko-shirai/basket/internal/models/item"
+	"github.com/kuroko-shirai/basket/internal/models/response"
 )
+
+type Cache interface {
+	Set(key int32, value response.Response)
+	Keys() []int32
+	Get(key int32) (response.Response, bool)
+	Has(key int32) bool
+}
 
 type Basket struct {
 	Size  int
-	TTL   int64
+	TTL   time.Duration
 	Items []item.Item
-	Cache cache.Cache
+	Cache Cache
 }
 
-func New(size int, ttl int64) *Basket {
+func New(size int, poll time.Duration, ttl time.Duration) *Basket {
+	newCache, err := cache.New(poll, ttl)
+	if err != nil {
+		return nil
+	}
+
 	return &Basket{
-		Size: size,
-		TTL:  ttl,
+		Size:  size,
+		TTL:   ttl,
+		Cache: newCache,
 	}
 }
 
