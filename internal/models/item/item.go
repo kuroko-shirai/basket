@@ -2,7 +2,6 @@ package item
 
 import "time"
 
-// Item
 type Item struct {
 	Timestamp int64
 	Element   int32

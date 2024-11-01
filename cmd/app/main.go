@@ -9,24 +9,35 @@ import (
 )
 
 func main() {
-	newBasket := basket.New(10, 5*time.Second, 3*time.Second)
-
-	newBasket.Add(1) // add 1 item
-	newBasket.Add(3) // add 2 item
-	newBasket.Add(4) // add 3 item
-
-	for index, item := range newBasket.Items {
-
-		time.Sleep(1 * time.Second) // Do something
-
-		newBasket.Cache.Set(
-			item.Element, response.Response{
-				Timestamp: time.Now().Unix(),
-				Message:   fmt.Sprintf("message %d", index),
-			})
-
-		for
+	newBasket, err := basket.New(10, 5*time.Second, 3*time.Second)
+	if err != nil {
+		panic(err)
 	}
 
-	fmt.Println(newBasket)
+	newBasket.Add(3) // Add 1 item
+	newBasket.Add(1) // Add 2 item
+	newBasket.Add(4) // Add 3 item
+	newBasket.Add(3) // Add 4 item
+	newBasket.Add(1) // Add 5 item
+
+	fmt.Println(">:", newBasket)
+
+	for basketsItemIndex, basketsItem := range newBasket.Items {
+
+		time.Sleep(1 * time.Second) // Do something and got a response
+		newResponse := fmt.Sprintf("message %d", basketsItemIndex)
+
+		newBasket.Cache.Set(
+			basketsItem.Element, response.Response{
+				Timestamp: time.Now().Unix(),
+				Message:   newResponse,
+			},
+		)
+
+		// Обратное движение с проверкой элементов
+		newBasket.Re(basketsItemIndex, basketsItem)
+		fmt.Println(">:", newBasket)
+	}
+
+	fmt.Println("<:", newBasket)
 }
