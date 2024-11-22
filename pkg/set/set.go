@@ -1,6 +1,6 @@
 package set
 
-// Set - структура, хранящая уникальные числа.
+// Set - структура, хранящая уникальные элементы.
 type Set[T comparable] struct {
 	slice    []T
 	elements map[T]struct{}
