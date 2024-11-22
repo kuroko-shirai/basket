@@ -2,42 +2,89 @@ package main
 
 import (
 	"fmt"
-	"time"
 
-	"github.com/kuroko-shirai/basket"
-	"github.com/kuroko-shirai/basket/internal/models/response"
+	"github.com/kuroko-shirai/basket/pkg/set"
 )
 
 func main() {
-	newBasket, err := basket.New(10, 5*time.Second, 3*time.Second)
-	if err != nil {
-		panic(err)
-	}
+	newSet := set.New[int]()
+	newSet.Add(1)
+	newSet.Add(2)
+	newSet.Add(2)
+	newSet.Add(3)
 
-	newBasket.Add(3) // Add 1 item
-	newBasket.Add(1) // Add 2 item
-	newBasket.Add(4) // Add 3 item
-	newBasket.Add(3) // Add 4 item
-	newBasket.Add(1) // Add 5 item
+	fmt.Println(newSet)
+	// newBasket, err := basket.New(10, 5*time.Second, 3*time.Second)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	fmt.Println(">:", newBasket)
+	// // Пусть service-cache хранит пару ответов от некоторого
+	// // процесса.
+	// newBasket.Save(2, response.Response{
+	// 	Timestamp: time.Now().Unix(),
+	// 	Message:   "message-2",
+	// })
 
-	for basketsItemIndex, basketsItem := range newBasket.Items {
+	// newBasket.Save(5, response.Response{
+	// 	Timestamp: time.Now().Unix(),
+	// 	Message:   "message-5",
+	// })
 
-		time.Sleep(1 * time.Second) // Do something and got a response
-		newResponse := fmt.Sprintf("message %d", basketsItemIndex)
+	// // Заполняем корзину некоторыми элементами, которые на
+	// // текущий момент имеют тип int32. В дальнейшем, это
+	// // будут запросы, либо некоторые задачи (func), которые
+	// // обращаются к service-cache.
+	// newBasket.Add(task.New(
+	// 	func(recovery any) {
+	// 		log.Printf("Panic! %!w", recovery)
+	// 	},
+	// 	func(ctx context.Context, id int32) func() {
+	// 		return func() {
+	// 			newBasket.Get(id)
+	// 		}
+	// 	}(context.Background(), int32(5)),
+	// ))
 
-		newBasket.Cache.Set(
-			basketsItem.Element, response.Response{
-				Timestamp: time.Now().Unix(),
-				Message:   newResponse,
-			},
-		)
+	// newBasket.Add(task.New(
+	// 	func(recovery any) {
+	// 		log.Printf("Panic! %!w", recovery)
+	// 	},
+	// 	func(ctx context.Context, id int32) func() {
+	// 		return func() {
+	// 			newBasket.Get(id)
+	// 		}
+	// 	}(context.Background(), int32(5)),
+	// ))
 
-		// Обратное движение с проверкой элементов
-		newBasket.Re(basketsItemIndex, basketsItem)
-		fmt.Println(">:", newBasket)
-	}
+	// newBasket.Add(task.New(
+	// 	func(recovery any) {
+	// 		log.Printf("Panic! %!w", recovery)
+	// 	},
+	// 	func(ctx context.Context, id int32) func() {
+	// 		return func() {
+	// 			newBasket.Get(id)
+	// 		}
+	// 	}(context.Background(), int32(5)),
+	// ))
 
-	fmt.Println("<:", newBasket)
+	// newBasket.Add(task.New(
+	// 	func(recovery any) {
+	// 		log.Printf("Panic! %!w", recovery)
+	// 	},
+	// 	func(ctx context.Context, id int32) func() {
+	// 		return func() {
+	// 			newBasket.Get(id)
+	// 		}
+	// 	}(context.Background(), int32(2)),
+	// ))
+
+	// keys := newBasket.Keys.Items()
+	// for k, v := range keys {
+	// 	log.Println("k:", k, "v:", v)
+	// }
+
+	// //newBasket.Do()
+
+	// time.Sleep(3 * time.Second)
 }
