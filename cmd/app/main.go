@@ -3,17 +3,27 @@ package main
 import (
 	"fmt"
 
-	"github.com/kuroko-shirai/basket/pkg/set"
+	"github.com/kuroko-shirai/basket/internal/models/storage"
 )
 
 func main() {
-	newSet := set.New[int]()
-	newSet.Add(1)
-	newSet.Add(2)
-	newSet.Add(2)
-	newSet.Add(3)
+	newStorage := storage.New()
 
-	fmt.Println(newSet)
+	newStorage.Add(1, 2, 3)
+
+	fmt.Println("1>", newStorage.QueryPool, newStorage.FractionsQueriesList, newStorage.FractionsPool)
+
+	newStorage.Add(1, 2, 3, 4)
+
+	fmt.Println("2>", newStorage)
+
+	newStorage.Add(1, 2, 3)
+
+	fmt.Println("3>", newStorage)
+
+	newStorage.Add("some argument")
+
+	fmt.Println("4>", newStorage)
 	// newBasket, err := basket.New(10, 5*time.Second, 3*time.Second)
 	// if err != nil {
 	// 	panic(err)
