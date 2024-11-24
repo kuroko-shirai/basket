@@ -46,7 +46,3 @@ func Function(signatures ...any) (func(...any), error) {
 func (t *Task) Do(signatures ...any) {
 	t.Function(signatures...)
 }
-
-func TypeOf(arg any) string {
-	return fmt.Sprintf("%T", arg)
-}
