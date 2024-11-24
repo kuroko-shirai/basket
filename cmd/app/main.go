@@ -1,29 +1,39 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/kuroko-shirai/basket/internal/models/storage"
 )
 
+type someType struct {
+	value int
+}
+
 func main() {
-	newStorage := storage.New()
+	newStorage := storage.New(storage.Int, storage.Int, someType{})
 
-	newStorage.Add(1, 2, 3)
+	newStorage.Add(1, 2, someType{
+		value: 1,
+	})
 
-	fmt.Println("1>", newStorage.QueryPool, newStorage.FractionsQueriesList, newStorage.FractionsPool)
+	// fmt.Println("1>", newStorage.QueryPool, newStorage.FractionsQueriesList, newStorage.FractionsPool)
 
-	newStorage.Add(1, 2, 3, 4)
+	newStorage.Add(1, 2, someType{
+		value: 2,
+	})
 
-	fmt.Println("2>", newStorage)
+	// fmt.Println("2>", newStorage)
 
-	newStorage.Add(1, 2, 3)
+	newStorage.Add(1, 2, someType{
+		value: 1,
+	})
 
-	fmt.Println("3>", newStorage)
+	// fmt.Println("3>", newStorage)
 
-	newStorage.Add("some argument")
+	//newStorage.Add("some argument")
 
-	fmt.Println("4>", newStorage)
+	// fmt.Println("4>", newStorage)
+
+	newStorage.Do()
 	// newBasket, err := basket.New(10, 5*time.Second, 3*time.Second)
 	// if err != nil {
 	// 	panic(err)

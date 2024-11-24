@@ -15,7 +15,7 @@ func NewQueryPool() QueryPool {
 	}
 }
 
-func (qp *QueryPool) Add(args ...any) int {
+func (qp *QueryPool) Add(args []any) int {
 	newQuery := Query{
 		ID:   len(qp.Queries),
 		Args: args,

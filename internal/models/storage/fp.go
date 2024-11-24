@@ -1,6 +1,8 @@
 package storage
 
-import "reflect"
+import (
+	"reflect"
+)
 
 type Fraction struct {
 	ID   int
@@ -17,7 +19,7 @@ func NewFractionPool() FractionsPool {
 	}
 }
 
-func (fp *FractionsPool) Add(args ...any) int {
+func (fp *FractionsPool) Add(args []any) int {
 	for _, fraction := range fp.Fractions {
 		if reflect.DeepEqual(fraction.Args, args) {
 			return fraction.ID
