@@ -17,5 +17,6 @@ func (qfl FractionsQueriesList) Add(fractionID, queryID int) {
 
 func (qfl FractionsQueriesList) Get(fractionID int) ([]int, bool) {
 	queries, ok := qfl[fractionID]
+
 	return queries, ok
 }

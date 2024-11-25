@@ -14,21 +14,13 @@ var (
 	String string
 )
 
-type Task struct {
-	Function func(...any)
+type Task[T comparable] struct {
+	Function func(...any) T
 }
 
-func NewTask(signatures []any) Task {
-	f, _ := Function(signatures...)
-
-	return Task{
-		Function: f,
-	}
-}
-
-// Function возвращает функцию с заданной сигнатурой.
-func Function(signatures ...any) (func(...any), error) {
-	return func(args ...any) {
+// functor - возвращает функцию с заданной сигнатурой.
+func functor[T comparable](fun func(args []any) T, signatures ...any) (func(...any) T, error) {
+	return func(args ...any) T {
 		if len(args) != len(signatures) {
 			panic(errors.New("wrong number of arguments"))
 		}
@@ -38,11 +30,19 @@ func Function(signatures ...any) (func(...any), error) {
 			}
 		}
 
-		fmt.Println(args...) // Здесь заменить на task.Task.Do()
+		return fun(args)
 	}, nil
 }
 
-// Do возвращает функцию с заданной сигнатурой.
-func (t *Task) Do(signatures ...any) {
-	t.Function(signatures...)
+func NewTask[T comparable](fun func(args []any) T, signatures []any) Task[T] {
+	f, _ := functor(fun, signatures...)
+
+	return Task[T]{
+		Function: f,
+	}
+}
+
+// Do - returns a function with the given signature.
+func (t *Task[T]) Do(signatures ...any) T {
+	return t.Function(signatures...)
 }

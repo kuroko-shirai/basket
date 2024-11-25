@@ -7,4 +7,4 @@ require (
 	github.com/kuroko-shirai/task v0.0.1
 )
 
-require github.com/orcaman/concurrent-map/v2 v2.0.1
+require github.com/orcaman/concurrent-map/v2 v2.0.1 // indirect

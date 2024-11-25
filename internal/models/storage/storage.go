@@ -1,22 +1,22 @@
 package storage
 
-type Storage struct {
-	QueryPool            QueryPool
+type Storage[T comparable] struct {
+	QueryPool            QueryPool[T]
 	FractionsPool        FractionsPool
 	FractionsQueriesList FractionsQueriesList
-	Task                 Task
+	Task                 Task[T]
 }
 
-func New(signatures ...any) *Storage {
-	return &Storage{
-		QueryPool:            NewQueryPool(),
+func New[T comparable](fun func(args []any) T, signatures ...any) *Storage[T] {
+	return &Storage[T]{
+		QueryPool:            NewQueryPool[T](),
 		FractionsPool:        NewFractionPool(),
 		FractionsQueriesList: NewFractionsQueriesList(),
-		Task:                 NewTask(signatures),
+		Task:                 NewTask(fun, signatures),
 	}
 }
 
-func (s *Storage) Add(args ...any) {
+func (s *Storage[T]) Add(args ...any) {
 	newQueryID := s.QueryPool.Add(args)
 
 	newFractionID := s.FractionsPool.Add(args)
@@ -24,8 +24,19 @@ func (s *Storage) Add(args ...any) {
 	s.FractionsQueriesList.Add(newFractionID, newQueryID)
 }
 
-func (s *Storage) Do() {
+func (s *Storage[T]) Do() {
 	for _, fraction := range s.FractionsPool.Fractions {
-		s.Task.Do(fraction.Args...)
+		ret := s.Task.Do(fraction.Args...)
+
+		if queries, ok := s.FractionsQueriesList[fraction.ID]; ok {
+			for _, id := range queries {
+				if _, ok := s.QueryPool[id]; ok {
+					s.QueryPool[id] = Query[T]{
+						Args: s.QueryPool[id].Args,
+						Ret:  ret,
+					}
+				}
+			}
+		}
 	}
 }
