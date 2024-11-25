@@ -25,10 +25,10 @@ func (s *Storage[T]) Add(args ...any) {
 }
 
 func (s *Storage[T]) Do() {
-	for _, fraction := range s.FractionsPool.Fractions {
-		ret := s.Task.Do(fraction.Args...)
+	for fpID, fpArgs := range s.FractionsPool {
+		ret := s.Task.Do(fpArgs...)
 
-		if queries, ok := s.FractionsQueriesList[fraction.ID]; ok {
+		if queries, ok := s.FractionsQueriesList[fpID]; ok {
 			for _, id := range queries {
 				if _, ok := s.QueryPool[id]; ok {
 					s.QueryPool[id] = Query[T]{
@@ -39,4 +39,8 @@ func (s *Storage[T]) Do() {
 			}
 		}
 	}
+}
+
+func (s *Storage[T]) clean(fractionID int) {
+
 }

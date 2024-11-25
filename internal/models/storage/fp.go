@@ -9,29 +9,21 @@ type Fraction struct {
 	Args []any
 }
 
-type FractionsPool struct {
-	Fractions []Fraction
-}
+type FractionsPool map[int][]any
 
 func NewFractionPool() FractionsPool {
-	return FractionsPool{
-		Fractions: make([]Fraction, 0),
-	}
+	return make(map[int][]any, 0)
 }
 
-func (fp *FractionsPool) Add(args []any) int {
-	for _, fraction := range fp.Fractions {
-		if reflect.DeepEqual(fraction.Args, args) {
-			return fraction.ID
+func (fp FractionsPool) Add(args []any) int {
+	for fpID, fpArgs := range fp {
+		if reflect.DeepEqual(fpArgs, args) {
+			return fpID
 		}
 	}
 
-	newFraction := Fraction{
-		ID:   len(fp.Fractions),
-		Args: args,
-	}
+	id := len(fp)
+	fp[id] = args
 
-	fp.Fractions = append(fp.Fractions, newFraction)
-
-	return newFraction.ID
+	return id
 }
