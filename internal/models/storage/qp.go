@@ -1,19 +1,19 @@
 package storage
 
-type Query[T comparable] struct {
+type query[T comparable] struct {
 	Ret  T
 	Args []any
 }
 
-type QueryPool[T comparable] map[int]Query[T]
+type queries[T comparable] map[int]query[T]
 
-func NewQueryPool[T comparable]() QueryPool[T] {
-	return make(map[int]Query[T], 0)
+func newQueries[T comparable]() queries[T] {
+	return make(map[int]query[T])
 }
 
-func (qp QueryPool[T]) Add(args []any) int {
+func (qp queries[T]) Add(args []any) int {
 	id := len(qp)
-	qp[id] = Query[T]{
+	qp[id] = query[T]{
 		Args: args,
 	}
 

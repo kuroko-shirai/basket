@@ -14,11 +14,7 @@ var (
 	String string
 )
 
-type Task[T comparable] struct {
-	Function func(...any) T
-}
-
-// functor - возвращает функцию с заданной сигнатурой.
+// functor - executes a function with the given signature and compares arguments with signature.
 func functor[T comparable](fun func(args []any) T, signatures ...any) (func(...any) T, error) {
 	return func(args ...any) T {
 		if len(args) != len(signatures) {
@@ -34,15 +30,19 @@ func functor[T comparable](fun func(args []any) T, signatures ...any) (func(...a
 	}, nil
 }
 
-func NewTask[T comparable](fun func(args []any) T, signatures []any) Task[T] {
+type task[T comparable] struct {
+	Function func(...any) T
+}
+
+func newTask[T comparable](fun func(args []any) T, signatures []any) task[T] {
 	f, _ := functor(fun, signatures...)
 
-	return Task[T]{
+	return task[T]{
 		Function: f,
 	}
 }
 
-// Do - returns a function with the given signature.
-func (t *Task[T]) Do(signatures ...any) T {
+// do - returns a function with the given signature.
+func (t *task[T]) do(signatures ...any) T {
 	return t.Function(signatures...)
 }

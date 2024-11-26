@@ -20,7 +20,9 @@ func main() {
 	newStorage.Add(1, 2)
 	newStorage.Add(1, 1)
 
+	log.Println(newStorage)
+
 	newStorage.Do()
 
-	log.Println(newStorage.QueryPool)
+	log.Println(newStorage)
 }
