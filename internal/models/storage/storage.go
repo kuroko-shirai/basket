@@ -8,7 +8,10 @@ type Storage[T comparable] struct {
 	completed processes
 }
 
-func New[T comparable](fun func(args []any) T, signatures ...any) *Storage[T] {
+func New[T comparable](
+	fun func(args []any) T,
+	signatures ...any,
+) *Storage[T] {
 	return &Storage[T]{
 		task:      newTask(fun, signatures),
 		queries:   newQueries[T](),
@@ -43,7 +46,11 @@ func (s *Storage[T]) Do() {
 			}
 		}
 
-		s.completed[fID] = s.onfly[fID]
+		s.completed[fID] = append(s.completed[fID], s.onfly[fID]...)
 		delete(s.onfly, fID)
 	}
+}
+
+func (s *Storage[T]) realease() {
+
 }

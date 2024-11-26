@@ -23,4 +23,13 @@ func main() {
 	newStorage.Do()
 
 	log.Println(newStorage)
+
+	newStorage.Add(1, 1)
+	newStorage.Add(1, 1)
+
+	log.Println(newStorage)
+
+	newStorage.Do()
+
+	log.Println(newStorage)
 }
