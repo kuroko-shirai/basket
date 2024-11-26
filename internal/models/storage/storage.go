@@ -1,18 +1,20 @@
 package storage
 
 type Storage[T comparable] struct {
-	queries            queries[T]
-	fractions          fractions
-	fractionsToQueries fractionsToQueries
-	task               task[T]
+	task      task[T]
+	queries   queries[T]
+	fractions fractions
+	onfly     processes
+	completed processes
 }
 
 func New[T comparable](fun func(args []any) T, signatures ...any) *Storage[T] {
 	return &Storage[T]{
-		queries:            newQueries[T](),
-		fractions:          newFractions(),
-		fractionsToQueries: newFractionsToQueries(),
-		task:               newTask(fun, signatures),
+		task:      newTask(fun, signatures),
+		queries:   newQueries[T](),
+		fractions: newFractions(),
+		onfly:     newProcesses(),
+		completed: newProcesses(),
 	}
 }
 
@@ -21,24 +23,27 @@ func (s *Storage[T]) Add(args ...any) {
 
 	newFractionID := s.fractions.Add(args)
 
-	s.fractionsToQueries.Add(newFractionID, newQueryID)
+	s.onfly.Add(newFractionID, newQueryID)
 }
 
 func (s *Storage[T]) Do() {
-	for fpID, fpArgs := range s.fractions {
-		ret := s.task.do(fpArgs...)
+	for fID, fsArgs := range s.fractions {
+		ret := s.task.do(fsArgs...)
 
-		if queries, ok := s.fractionsToQueries[fpID]; ok {
-			for _, id := range queries {
-				if _, ok := s.queries[id]; ok {
-					s.queries[id] = query[T]{
-						Args: s.queries[id].Args,
+		if queries, ok := s.onfly[fID]; ok {
+			for _, qID := range queries {
+				if _, ok := s.queries[qID]; ok {
+					s.queries[qID] = query[T]{
+						Args: s.queries[qID].Args,
 						Ret:  ret,
 					}
 
-					delete(s.fractions, fpID)
+					delete(s.fractions, fID)
 				}
 			}
 		}
+
+		s.completed[fID] = s.onfly[fID]
+		delete(s.onfly, fID)
 	}
 }

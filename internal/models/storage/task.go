@@ -14,8 +14,16 @@ var (
 	String string
 )
 
-// functor - executes a function with the given signature and compares arguments with signature.
-func functor[T comparable](fun func(args []any) T, signatures ...any) (func(...any) T, error) {
+type task[T comparable] struct {
+	Function func(...any) T
+}
+
+// functor - executes a function with the given signature
+// and compares arguments with signature.
+func functor[T comparable](
+	fun func(args []any) T,
+	signatures ...any,
+) (func(...any) T, error) {
 	return func(args ...any) T {
 		if len(args) != len(signatures) {
 			panic(errors.New("wrong number of arguments"))
@@ -30,11 +38,10 @@ func functor[T comparable](fun func(args []any) T, signatures ...any) (func(...a
 	}, nil
 }
 
-type task[T comparable] struct {
-	Function func(...any) T
-}
-
-func newTask[T comparable](fun func(args []any) T, signatures []any) task[T] {
+func newTask[T comparable](
+	fun func(args []any) T,
+	signatures []any,
+) task[T] {
 	f, _ := functor(fun, signatures...)
 
 	return task[T]{
