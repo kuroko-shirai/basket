@@ -6,7 +6,7 @@ func newProcesses() processes {
 	return make(map[int][]int)
 }
 
-func (ftq processes) Add(fID, qID int) {
+func (ftq processes) add(fID, qID int) {
 	ql, ok := ftq[fID]
 	if !ok {
 		ql = make([]int, 0, 1)

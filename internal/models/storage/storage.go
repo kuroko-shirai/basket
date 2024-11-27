@@ -33,11 +33,11 @@ func New[T comparable](
 }
 
 func (s *Storage[T]) Add(args ...any) {
-	newQueryID := s.queries.Add(args)
+	newQueryID := s.queries.add(args)
 
-	newFractionID := s.fractions.Add(args)
+	newFractionID := s.fractions.add(args)
 
-	s.onfly.Add(newFractionID, newQueryID)
+	s.onfly.add(newFractionID, newQueryID)
 }
 
 func (s *Storage[T]) Do() {

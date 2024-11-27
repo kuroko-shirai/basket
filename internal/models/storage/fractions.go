@@ -10,7 +10,7 @@ func newFractions() fractions {
 	return make(map[int][]any)
 }
 
-func (fs fractions) Add(args []any) int {
+func (fs fractions) add(args []any) int {
 	for fID, fArgs := range fs {
 		if reflect.DeepEqual(fArgs, args) {
 			return fID
