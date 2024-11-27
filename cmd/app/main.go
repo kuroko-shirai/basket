@@ -7,14 +7,16 @@ import (
 	"github.com/kuroko-shirai/basket"
 )
 
+func sum(a, b int) int {
+	return a + b
+}
+
 func main() {
 	newBasket := basket.New(func(args []any) int {
-		a1 := args[0].(int)
-		a2 := args[1].(int)
+		a := args[0].(int)
+		b := args[1].(int)
 
-		return func(a, b int) int {
-			return a + b
-		}(a1, a2)
+		return sum(a, b)
 	}, func(ctx context.Context, arg any) {
 		sum := arg.(int)
 

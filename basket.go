@@ -43,41 +43,41 @@ func New[T comparable](
 	}
 }
 
-func (s *Basket[T]) Add(args ...any) {
-	newQueryID := s.queries.Add(args)
+func (b *Basket[T]) Add(args ...any) {
+	newQueryID := b.queries.Add(args)
 
-	newFractionID := s.fractions.Add(args)
+	newFractionID := b.fractions.Add(args)
 
-	s.onfly.Add(newFractionID, newQueryID)
+	b.onfly.Add(newFractionID, newQueryID)
 }
 
-func (s *Basket[T]) Do() {
-	for fID, fsArgs := range s.fractions {
-		ret := s.task.Do(fsArgs...)
+func (b *Basket[T]) Do() {
+	for fID, fsArgs := range b.fractions {
+		ret := b.task.Do(fsArgs...)
 
-		if queries, ok := s.onfly[fID]; ok {
+		if queries, ok := b.onfly[fID]; ok {
 			for _, qID := range queries {
-				if _, ok := s.queries[qID]; ok {
-					s.queries[qID] = models.Query[T]{
-						Args: s.queries[qID].Args,
+				if _, ok := b.queries[qID]; ok {
+					b.queries[qID] = models.Query[T]{
+						Args: b.queries[qID].Args,
 						Ret:  ret,
 					}
 
-					delete(s.fractions, fID)
+					delete(b.fractions, fID)
 				}
 			}
 		}
 
-		s.completed[fID] = append(
-			s.completed[fID],
-			s.onfly[fID]...,
+		b.completed[fID] = append(
+			b.completed[fID],
+			b.onfly[fID]...,
 		)
-		delete(s.onfly, fID)
+		delete(b.onfly, fID)
 	}
 }
 
-func (s *Basket[T]) Release(ctx context.Context) {
-	for _, qsID := range s.completed {
+func (b *Basket[T]) Release(ctx context.Context) {
+	for _, qsID := range b.completed {
 		var wg sync.WaitGroup
 
 		wg.Add(len(qsID))
@@ -91,8 +91,8 @@ func (s *Basket[T]) Release(ctx context.Context) {
 					return func() {
 						defer wg.Done()
 
-						if query, ok := s.queries[qID]; ok {
-							s.releaser(ctx, query.Ret)
+						if query, ok := b.queries[qID]; ok {
+							b.releaser(ctx, query.Ret)
 						}
 					}
 				}(context.Background()),
@@ -104,11 +104,15 @@ func (s *Basket[T]) Release(ctx context.Context) {
 		wg.Wait()
 	}
 
-	for gID := range s.completed {
-		delete(s.completed, gID)
+	for gID := range b.completed {
+		delete(b.completed, gID)
 	}
 
-	for qID := range s.queries {
-		delete(s.queries, qID)
+	for qID := range b.queries {
+		delete(b.queries, qID)
 	}
+}
+
+func (b *Basket[T]) Size() int {
+	return len(b.queries)
 }
