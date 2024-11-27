@@ -1,5 +1,13 @@
 package storage
 
+import (
+	"context"
+	"log"
+	"sync"
+
+	t "github.com/kuroko-shirai/task"
+)
+
 type Storage[T comparable] struct {
 	task      task[T]
 	queries   queries[T]
@@ -52,5 +60,28 @@ func (s *Storage[T]) Do() {
 }
 
 func (s *Storage[T]) realease() {
+	for key, qsID := range s.completed {
+		var wg sync.WaitGroup
 
+		wg.Add(1)
+		for _, qID := range qsID {
+
+			newTask := t.New(
+				func(recovery any) {
+					log.Printf("Panic in the workflow process! %!w", recovery)
+				},
+				func(ctx context.Context, out chan<- ChCacheGetItemsOnOff) func() {
+					return func() {
+						defer wg.Done()
+
+						out <- ChCacheGetItemsOnOff{
+							State: 1,
+							Err:   nil,
+						}
+					}
+				}(context.Background(), ch),
+			)
+			s.queries[qID].release()
+		}
+	}
 }
