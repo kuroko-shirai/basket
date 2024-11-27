@@ -14,10 +14,12 @@ type Storage[T comparable] struct {
 	fractions fractions
 	onfly     processes
 	completed processes
+	releaser  func(arg any)
 }
 
 func New[T comparable](
 	fun func(args []any) T,
+	rel func(arg any),
 	signatures ...any,
 ) *Storage[T] {
 	return &Storage[T]{
@@ -26,6 +28,7 @@ func New[T comparable](
 		fractions: newFractions(),
 		onfly:     newProcesses(),
 		completed: newProcesses(),
+		releaser:  rel,
 	}
 }
 
@@ -59,29 +62,39 @@ func (s *Storage[T]) Do() {
 	}
 }
 
-func (s *Storage[T]) realease() {
-	for key, qsID := range s.completed {
+func (s *Storage[T]) Release(ctx context.Context) {
+	for _, qsID := range s.completed {
 		var wg sync.WaitGroup
 
-		wg.Add(1)
-		for _, qID := range qsID {
+		wg.Add(len(qsID))
 
+		for _, qID := range qsID {
 			newTask := t.New(
 				func(recovery any) {
-					log.Printf("Panic in the workflow process! %!w", recovery)
+					log.Println("panic: %!w", recovery)
 				},
-				func(ctx context.Context, out chan<- ChCacheGetItemsOnOff) func() {
+				func(ctx context.Context) func() {
 					return func() {
 						defer wg.Done()
 
-						out <- ChCacheGetItemsOnOff{
-							State: 1,
-							Err:   nil,
+						if query, ok := s.queries[qID]; ok {
+							s.releaser(query.Ret)
 						}
 					}
-				}(context.Background(), ch),
+				}(context.Background()),
 			)
-			s.queries[qID].release()
+
+			newTask.Do()
 		}
+
+		wg.Wait()
+	}
+
+	for gID := range s.completed {
+		delete(s.completed, gID)
+	}
+
+	for qID := range s.queries {
+		delete(s.queries, qID)
 	}
 }

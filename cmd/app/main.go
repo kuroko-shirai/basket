@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 
 	"github.com/kuroko-shirai/basket/internal/models/storage"
@@ -14,6 +15,10 @@ func main() {
 		return func(a, b int) int {
 			return a + b
 		}(a1, a2)
+	}, func(arg any) {
+		sum := arg.(int)
+
+		log.Println("release:", sum)
 	}, storage.Int, storage.Int)
 
 	newStorage.Add(1, 1)
@@ -30,6 +35,10 @@ func main() {
 	log.Println(newStorage)
 
 	newStorage.Do()
+
+	log.Println(newStorage)
+
+	newStorage.Release(context.TODO())
 
 	log.Println(newStorage)
 }
