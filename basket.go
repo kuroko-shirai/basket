@@ -5,8 +5,9 @@ import (
 	"log"
 	"sync"
 
-	"github.com/kuroko-shirai/basket/internal/models"
 	t "github.com/kuroko-shirai/task"
+
+	"github.com/kuroko-shirai/basket/internal/models"
 )
 
 var (
