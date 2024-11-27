@@ -1,20 +1,11 @@
-package storage
+package models
 
 import (
 	"errors"
 	"fmt"
 )
 
-var (
-	Int8   int8
-	Int16  int16
-	Int32  int32
-	Int64  int64
-	Int    int
-	String string
-)
-
-type task[T comparable] struct {
+type Task[T comparable] struct {
 	Function func(...any) T
 }
 
@@ -38,18 +29,18 @@ func functor[T comparable](
 	}, nil
 }
 
-func newTask[T comparable](
+func NewTask[T comparable](
 	fun func(args []any) T,
 	signatures []any,
-) task[T] {
+) Task[T] {
 	f, _ := functor(fun, signatures...)
 
-	return task[T]{
+	return Task[T]{
 		Function: f,
 	}
 }
 
-// do - returns a function with the given signature.
-func (t *task[T]) do(signatures ...any) T {
+// Do - returns a function with the given signature.
+func (t *Task[T]) Do(signatures ...any) T {
 	return t.Function(signatures...)
 }

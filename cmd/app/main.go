@@ -4,11 +4,11 @@ import (
 	"context"
 	"log"
 
-	"github.com/kuroko-shirai/basket/internal/models/storage"
+	"github.com/kuroko-shirai/basket"
 )
 
 func main() {
-	newStorage := storage.New(func(args []any) int {
+	newStorage := basket.New(func(args []any) int {
 		a1 := args[0].(int)
 		a2 := args[1].(int)
 
@@ -19,7 +19,7 @@ func main() {
 		sum := arg.(int)
 
 		log.Println("release:", sum)
-	}, storage.Int, storage.Int)
+	}, basket.Int, basket.Int)
 
 	newStorage.Add(1, 1)
 	newStorage.Add(1, 2)

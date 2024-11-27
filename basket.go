@@ -1,19 +1,29 @@
-package storage
+package basket
 
 import (
 	"context"
 	"log"
 	"sync"
 
+	"github.com/kuroko-shirai/basket/internal/models"
 	t "github.com/kuroko-shirai/task"
 )
 
-type Storage[T comparable] struct {
-	task      task[T]
-	queries   queries[T]
-	fractions fractions
-	onfly     processes
-	completed processes
+var (
+	Int8   int8
+	Int16  int16
+	Int32  int32
+	Int64  int64
+	Int    int
+	String string
+)
+
+type Basket[T comparable] struct {
+	task      models.Task[T]
+	queries   models.Queries[T]
+	fractions models.Fractions
+	onfly     models.Processes
+	completed models.Processes
 	releaser  func(arg any)
 }
 
@@ -21,33 +31,33 @@ func New[T comparable](
 	fun func(args []any) T,
 	rel func(arg any),
 	signatures ...any,
-) *Storage[T] {
-	return &Storage[T]{
-		task:      newTask(fun, signatures),
-		queries:   newQueries[T](),
-		fractions: newFractions(),
-		onfly:     newProcesses(),
-		completed: newProcesses(),
+) *Basket[T] {
+	return &Basket[T]{
+		task:      models.NewTask(fun, signatures),
+		queries:   models.NewQueries[T](),
+		fractions: models.NewFractions(),
+		onfly:     models.NewProcesses(),
+		completed: models.NewProcesses(),
 		releaser:  rel,
 	}
 }
 
-func (s *Storage[T]) Add(args ...any) {
-	newQueryID := s.queries.add(args)
+func (s *Basket[T]) Add(args ...any) {
+	newQueryID := s.queries.Add(args)
 
-	newFractionID := s.fractions.add(args)
+	newFractionID := s.fractions.Add(args)
 
-	s.onfly.add(newFractionID, newQueryID)
+	s.onfly.Add(newFractionID, newQueryID)
 }
 
-func (s *Storage[T]) Do() {
+func (s *Basket[T]) Do() {
 	for fID, fsArgs := range s.fractions {
-		ret := s.task.do(fsArgs...)
+		ret := s.task.Do(fsArgs...)
 
 		if queries, ok := s.onfly[fID]; ok {
 			for _, qID := range queries {
 				if _, ok := s.queries[qID]; ok {
-					s.queries[qID] = query[T]{
+					s.queries[qID] = models.Query[T]{
 						Args: s.queries[qID].Args,
 						Ret:  ret,
 					}
@@ -65,7 +75,7 @@ func (s *Storage[T]) Do() {
 	}
 }
 
-func (s *Storage[T]) Release(ctx context.Context) {
+func (s *Basket[T]) Release(ctx context.Context) {
 	for _, qsID := range s.completed {
 		var wg sync.WaitGroup
 

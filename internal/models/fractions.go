@@ -1,16 +1,16 @@
-package storage
+package models
 
 import (
 	"reflect"
 )
 
-type fractions map[int][]any
+type Fractions map[int][]any
 
-func newFractions() fractions {
+func NewFractions() Fractions {
 	return make(map[int][]any)
 }
 
-func (fs fractions) add(args []any) int {
+func (fs Fractions) Add(args []any) int {
 	for fID, fArgs := range fs {
 		if reflect.DeepEqual(fArgs, args) {
 			return fID
