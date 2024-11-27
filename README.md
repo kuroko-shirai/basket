@@ -110,3 +110,12 @@ the console:
 2024/11/27 13:50:52 release: 2
 2024/11/27 13:50:52 release: 2
 ```
+
+### Quick test
+
+To quickly launch and verify the functionality of this
+package, run the following command
+
+```bash
+make run
+```
