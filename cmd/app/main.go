@@ -3,11 +3,14 @@ package main
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/kuroko-shirai/basket"
 )
 
 func sum(a, b int) int {
+	time.Sleep(time.Millisecond)
+
 	return a + b
 }
 
@@ -23,16 +26,28 @@ func main() {
 		log.Println("release:", sum)
 	}, basket.Int, basket.Int)
 
-	newBasket.Add(1, 1)
-	newBasket.Add(1, 2)
-	newBasket.Add(1, 1)
+	{
+		t0 := time.Now()
 
-	newBasket.Do()
+		for i := 1; i <= 10; i++ {
+			newBasket.Add(1, 1)
+			if newBasket.Size() == 5 {
+				newBasket.Do()
+				newBasket.Release(context.TODO())
+			}
+		}
 
-	newBasket.Add(1, 1)
-	newBasket.Add(1, 1)
+		log.Println("process took", time.Since(t0).Milliseconds())
+		log.Println("basket size", newBasket.Size())
+	}
 
-	newBasket.Do()
+	{
+		t0 := time.Now()
 
-	newBasket.Release(context.TODO())
+		for i := 1; i <= 10; i++ {
+			sum(1, 1)
+		}
+
+		log.Println("process took", time.Since(t0).Milliseconds())
+	}
 }
