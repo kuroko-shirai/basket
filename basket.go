@@ -21,15 +21,15 @@ var (
 type Basket[T comparable] struct {
 	task      models.Task[T]
 	queries   models.Queries[T]
-	fractions models.Fractions
+	fractions models.Factions
 	onfly     models.Processes
 	completed models.Processes
-	releaser  func(arg any)
+	releaser  func(ctx context.Context, arg any)
 }
 
 func New[T comparable](
 	fun func(args []any) T,
-	rel func(arg any),
+	rel func(ctx context.Context, arg any),
 	signatures ...any,
 ) *Basket[T] {
 	return &Basket[T]{
@@ -91,7 +91,7 @@ func (s *Basket[T]) Release(ctx context.Context) {
 						defer wg.Done()
 
 						if query, ok := s.queries[qID]; ok {
-							s.releaser(query.Ret)
+							s.releaser(ctx, query.Ret)
 						}
 					}
 				}(context.Background()),

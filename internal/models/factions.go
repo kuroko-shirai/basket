@@ -4,13 +4,13 @@ import (
 	"reflect"
 )
 
-type Fractions map[int][]any
+type Factions map[int][]any
 
-func NewFractions() Fractions {
+func NewFractions() Factions {
 	return make(map[int][]any)
 }
 
-func (fs Fractions) Add(args []any) int {
+func (fs Factions) Add(args []any) int {
 	for fID, fArgs := range fs {
 		if reflect.DeepEqual(fArgs, args) {
 			return fID

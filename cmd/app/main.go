@@ -15,7 +15,7 @@ func main() {
 		return func(a, b int) int {
 			return a + b
 		}(a1, a2)
-	}, func(arg any) {
+	}, func(ctx context.Context, arg any) {
 		sum := arg.(int)
 
 		log.Println("release:", sum)
@@ -27,18 +27,10 @@ func main() {
 
 	newStorage.Do()
 
-	log.Println(newStorage)
-
 	newStorage.Add(1, 1)
 	newStorage.Add(1, 1)
-
-	log.Println(newStorage)
 
 	newStorage.Do()
 
-	log.Println(newStorage)
-
 	newStorage.Release(context.TODO())
-
-	log.Println(newStorage)
 }
