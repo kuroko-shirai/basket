@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	newStorage := basket.New(func(args []any) int {
+	newBasket := basket.New(func(args []any) int {
 		a1 := args[0].(int)
 		a2 := args[1].(int)
 
@@ -21,16 +21,16 @@ func main() {
 		log.Println("release:", sum)
 	}, basket.Int, basket.Int)
 
-	newStorage.Add(1, 1)
-	newStorage.Add(1, 2)
-	newStorage.Add(1, 1)
+	newBasket.Add(1, 1)
+	newBasket.Add(1, 2)
+	newBasket.Add(1, 1)
 
-	newStorage.Do()
+	newBasket.Do()
 
-	newStorage.Add(1, 1)
-	newStorage.Add(1, 1)
+	newBasket.Add(1, 1)
+	newBasket.Add(1, 1)
 
-	newStorage.Do()
+	newBasket.Do()
 
-	newStorage.Release(context.TODO())
+	newBasket.Release(context.TODO())
 }

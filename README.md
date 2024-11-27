@@ -60,7 +60,7 @@ the list of types will be a pair of `basket.Int` types.
 Now, let's create a basket's object.
 
 ```go
-newStorage := basket.New(
+newBasket := basket.New(
 	newTask,
 	newReleaser,
 	basket.Int, basket.Int,
@@ -74,9 +74,9 @@ we can create a faction consisting of three tasks, each of
 which adds two units.
 
 ```go
-newStorage.Add(1, 1)
-newStorage.Add(1, 1)
-newStorage.Add(1, 1)
+newBasket.Add(1, 1)
+newBasket.Add(1, 1)
+newBasket.Add(1, 1)
 ```
 
 Now, the user can choose when to execute all the tasks in
@@ -88,7 +88,7 @@ a release command. Let's execute the task delegated by the
 faction.
 
 ```go
-newStorage.Do()
+newBasket.Do()
 ```
 
 That's it! After executing the task of the faction delegate,
@@ -99,7 +99,7 @@ can do this by calling the `Release(ctx context.Context)`
 method.
 
 ```go
-newStorage.Release(context.TODO())
+newBasket.Release(context.TODO())
 ```
 
 After running this command, you should see a list appear in
