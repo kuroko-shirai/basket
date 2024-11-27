@@ -57,7 +57,10 @@ func (s *Storage[T]) Do() {
 			}
 		}
 
-		s.completed[fID] = append(s.completed[fID], s.onfly[fID]...)
+		s.completed[fID] = append(
+			s.completed[fID],
+			s.onfly[fID]...,
+		)
 		delete(s.onfly, fID)
 	}
 }
