@@ -3,7 +3,6 @@ package basket
 import (
 	"context"
 	"log"
-	"sync"
 
 	t "github.com/kuroko-shirai/task"
 
@@ -78,30 +77,27 @@ func (b *Basket[T]) Do() {
 
 func (b *Basket[T]) Release(ctx context.Context) {
 	for _, qsID := range b.completed {
-		var wg sync.WaitGroup
-
-		wg.Add(len(qsID))
+		g := t.WithRecover(
+			func(recovery any) {
+				log.Println("panic: %!w", recovery)
+			},
+		)
 
 		for _, qID := range qsID {
-			newTask := t.New(
-				func(recovery any) {
-					log.Println("panic: %!w", recovery)
-				},
-				func(ctx context.Context) func() {
-					return func() {
-						defer wg.Done()
-
-						if query, ok := b.queries[qID]; ok {
-							b.releaser(ctx, query.Ret)
-						}
+			g.Do(func() func() error {
+				return func() error {
+					if query, ok := b.queries[qID]; ok {
+						b.releaser(ctx, query.Ret)
 					}
-				}(context.Background()),
-			)
 
-			newTask.Do()
+					return nil
+				}
+			}())
 		}
 
-		wg.Wait()
+		if err := g.Wait(); err != nil {
+			log.Println("something wrong in first batch", err)
+		}
 	}
 
 	for gID := range b.completed {
