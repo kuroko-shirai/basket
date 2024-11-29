@@ -78,7 +78,7 @@ func (b *Basket[T]) Do() {
 func (b *Basket[T]) Release(ctx context.Context) {
 	for _, qsID := range b.completed {
 		g := t.WithRecover(
-			func(recovery any) {
+			func(recovery any, args ...any) {
 				log.Println("panic: %!w", recovery)
 			},
 		)
